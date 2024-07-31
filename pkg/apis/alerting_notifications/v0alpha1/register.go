@@ -86,6 +86,27 @@ var (
 			},
 		},
 	)
+	RouteResourceInfo = common.NewResourceInfo(GROUP, VERSION,
+		"route", "route", "Route",
+		func() runtime.Object { return &Route{} },
+		func() runtime.Object { return &Route{} },
+		utils.TableColumns{
+			Definition: []metav1.TableColumnDefinition{
+				{Name: "Name", Type: "string", Format: "name"},
+				// {Name: "Intervals", Type: "string", Format: "string", Description: "The display name"},
+			},
+			Reader: func(obj any) ([]interface{}, error) {
+				r, ok := obj.(*Route)
+				if !ok {
+					return nil, fmt.Errorf("expected resource or info")
+				}
+				return []interface{}{
+					r.Name,
+					// r.Spec, //TODO implement formatting for Spec, same as UI?
+				}, nil
+			},
+		},
+	)
 	// SchemeGroupVersion is group version used to register these objects
 	SchemeGroupVersion = schema.GroupVersion{Group: GROUP, Version: VERSION}
 	// SchemaBuilder is used by standard codegen
@@ -108,6 +129,7 @@ func AddKnownTypesGroup(scheme *runtime.Scheme, g schema.GroupVersion) error {
 		&ReceiverList{},
 		&TemplateGroup{},
 		&TemplateGroupList{},
+		&Route{},
 	)
 	metav1.AddToGroupVersion(scheme, g)
 
