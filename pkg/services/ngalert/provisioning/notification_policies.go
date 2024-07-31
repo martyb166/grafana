@@ -16,6 +16,7 @@ import (
 	"github.com/grafana/grafana/pkg/services/ngalert/api/tooling/definitions"
 	"github.com/grafana/grafana/pkg/services/ngalert/models"
 	"github.com/grafana/grafana/pkg/services/ngalert/notifier/legacy_storage"
+	"github.com/grafana/grafana/pkg/services/ngalert/provisioning/validation"
 	"github.com/grafana/grafana/pkg/setting"
 )
 
@@ -25,6 +26,7 @@ type NotificationPolicyService struct {
 	xact            TransactionManager
 	log             log.Logger
 	settings        setting.UnifiedAlertingSettings
+	validator       validation.ProvenanceStatusTransitionValidator
 }
 
 func NewNotificationPolicyService(am alertmanagerConfigStore, prov ProvisioningStore,
@@ -35,6 +37,7 @@ func NewNotificationPolicyService(am alertmanagerConfigStore, prov ProvisioningS
 		xact:            xact,
 		log:             log,
 		settings:        settings,
+		validator:       validation.ValidateProvenanceRelaxed,
 	}
 }
 
@@ -74,6 +77,15 @@ func (nps *NotificationPolicyService) UpdatePolicyTree(ctx context.Context, orgI
 
 	err = nps.checkOptimisticConcurrency(*revision.Config.AlertmanagerConfig.Route, models.Provenance(tree.Provenance), version, "update")
 	if err != nil {
+		return err
+	}
+
+	// check that provenance is not changed in an invalid way
+	storedProvenance, err := nps.provenanceStore.GetProvenance(ctx, &tree, orgID)
+	if err != nil {
+		return err
+	}
+	if err := nps.validator(storedProvenance, models.Provenance(tree.Provenance)); err != nil {
 		return err
 	}
 
