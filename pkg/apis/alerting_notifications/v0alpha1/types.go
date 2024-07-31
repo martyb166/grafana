@@ -175,7 +175,6 @@ type ReceiverList struct {
 
 // region Templates
 
-// +genclient
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 type TemplateGroup struct {
