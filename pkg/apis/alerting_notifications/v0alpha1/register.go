@@ -86,7 +86,7 @@ var (
 			},
 		},
 	)
-	RouteResourceInfo = common.NewResourceInfo(GROUP, VERSION,
+	RouteResourceInfo = utils.NewResourceInfo(GROUP, VERSION,
 		"route", "route", "Route",
 		func() runtime.Object { return &Route{} },
 		func() runtime.Object { return &Route{} },
