@@ -22,7 +22,7 @@ import (
 	"github.com/grafana/grafana/pkg/storage/unified/sql/sqltemplate"
 )
 
-const tracePrefix = "resource."
+const tracePrefix = "sql.resource."
 const defaultPollingInterval = 100 * time.Millisecond
 
 type Backend interface {
