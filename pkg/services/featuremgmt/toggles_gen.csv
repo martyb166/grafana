@@ -177,6 +177,8 @@ ssoSettingsLDAP,experimental,@grafana/identity-access-team,false,false,false
 failWrongDSUID,experimental,@grafana/plugins-platform-backend,false,false,false
 zanzana,experimental,@grafana/identity-access-team,false,false,false
 passScopeToDashboardApi,experimental,@grafana/dashboards-squad,false,false,false
+passTimeRangeToDashboardApi,experimental,@grafana/dashboards-squad,false,false,false
+passFiltersToDashboardApi,experimental,@grafana/dashboards-squad,false,false,false
 alertingApiServer,experimental,@grafana/alerting-squad,false,true,false
 dashboardRestoreUI,experimental,@grafana/grafana-frontend-platform,false,false,false
 cloudWatchRoundUpEndTime,GA,@grafana/aws-datasources,false,false,false

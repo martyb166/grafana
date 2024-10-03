@@ -196,6 +196,8 @@ export interface FeatureToggles {
   failWrongDSUID?: boolean;
   zanzana?: boolean;
   passScopeToDashboardApi?: boolean;
+  passTimeRangeToDashboardApi?: boolean;
+  passFiltersToDashboardApi?: boolean;
   alertingApiServer?: boolean;
   dashboardRestoreUI?: boolean;
   cloudWatchRoundUpEndTime?: boolean;
