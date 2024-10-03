@@ -1,4 +1,4 @@
-import { getMock, locationReloadSpy } from './mocks';
+import { dashboardReloadSpy, getMock } from './mocks';
 import {
   getDashboard,
   getDashboardsExpand,
@@ -73,8 +73,8 @@ export const expectDashboardNotInDocument = (uid: string) => expectNotInDocument
 export const expectDashboardLength = (uid: string, length: number) =>
   expect(queryAllDashboard(uid)).toHaveLength(length);
 
-export const expectNotDashboardReload = () => expect(locationReloadSpy).not.toHaveBeenCalled();
-export const expectDashboardReload = () => expect(locationReloadSpy).toHaveBeenCalled();
+export const expectNotDashboardReload = () => expect(dashboardReloadSpy).not.toHaveBeenCalled();
+export const expectDashboardReload = () => expect(dashboardReloadSpy).toHaveBeenCalled();
 
 export const expectOldDashboardDTO = (scopes?: string[]) =>
   expect(getMock).toHaveBeenCalledWith('/api/dashboards/uid/1', scopes ? { scopes } : undefined);
