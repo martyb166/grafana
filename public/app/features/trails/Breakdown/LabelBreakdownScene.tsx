@@ -21,7 +21,7 @@ import {
   VariableDependencyConfig,
   VizPanel,
 } from '@grafana/scenes';
-import { DataQuery } from '@grafana/schema';
+import { DataQuery, SortOrder, TooltipDisplayMode } from '@grafana/schema';
 import { Button, LoadingPlaceholder, useStyles2 } from '@grafana/ui';
 import { Field } from '@grafana/ui/';
 import { Trans } from 'app/core/internationalization';
@@ -301,6 +301,7 @@ export function buildAllLayout(
     const unit = queryDef.unit;
 
     const vizPanel = PanelBuilders.timeseries()
+      .setOption('tooltip', { mode: TooltipDisplayMode.Multi, sort: SortOrder.Descending })
       .setOption('legend', { showLegend: false })
       .setTitle(option.label!)
       .setData(
