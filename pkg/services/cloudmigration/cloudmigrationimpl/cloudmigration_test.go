@@ -33,6 +33,7 @@ import (
 	libraryelementsfake "github.com/grafana/grafana/pkg/services/libraryelements/fake"
 	libraryelements "github.com/grafana/grafana/pkg/services/libraryelements/model"
 	"github.com/grafana/grafana/pkg/services/ngalert"
+	"github.com/grafana/grafana/pkg/services/ngalert/api/tooling/definitions"
 	"github.com/grafana/grafana/pkg/services/ngalert/metrics"
 	ngalertstore "github.com/grafana/grafana/pkg/services/ngalert/store"
 	ngalertfakes "github.com/grafana/grafana/pkg/services/ngalert/tests/fakes"
@@ -42,6 +43,8 @@ import (
 	secretskv "github.com/grafana/grafana/pkg/services/secrets/kvstore"
 	"github.com/grafana/grafana/pkg/services/user"
 	"github.com/grafana/grafana/pkg/setting"
+	"github.com/prometheus/alertmanager/config"
+	"github.com/prometheus/alertmanager/timeinterval"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -722,6 +725,75 @@ func TestGetLibraryElementsCommands(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, cmds, 1)
 	require.Equal(t, createLibraryElementCmd.UID, cmds[0].UID)
+}
+
+func TestAlertService(t *testing.T) {
+	s := setUpServiceTest(t, false).(*Service)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	t.Cleanup(cancel)
+
+	s.ngAlert.Api.MuteTimings = &fakeMuteTimingService{}
+
+	user := &user.SignedInUser{OrgID: 1}
+
+	muteTimeIntervals, err := s.getAlertMuteTimings(ctx, user)
+	require.NoError(t, err)
+	require.NotEmpty(t, muteTimeIntervals)
+}
+
+type fakeMuteTimingService struct{}
+
+func (s *fakeMuteTimingService) GetMuteTimings(ctx context.Context, orgID int64) ([]definitions.MuteTimeInterval, error) {
+	return []definitions.MuteTimeInterval{
+		{
+			UID: "xxxxx",
+			MuteTimeInterval: config.MuteTimeInterval{
+				Name: "jaja",
+				TimeIntervals: []timeinterval.TimeInterval{
+					{
+						Times:       []timeinterval.TimeRange{},
+						Weekdays:    []timeinterval.WeekdayRange{},
+						DaysOfMonth: []timeinterval.DayOfMonthRange{},
+						Months: []timeinterval.MonthRange{
+							{
+								InclusiveRange: timeinterval.InclusiveRange{Begin: 2, End: 4},
+							},
+						},
+						Years: []timeinterval.YearRange{
+							{
+								InclusiveRange: timeinterval.InclusiveRange{
+									Begin: 2022,
+									End:   2024,
+								},
+							},
+						},
+						Location: &timeinterval.Location{
+							Location: time.FixedZone("Americas/Anchorage", -8),
+						},
+					},
+				},
+			},
+			Version:    "1",
+			Provenance: "",
+		},
+	}, nil
+}
+
+func (s *fakeMuteTimingService) GetMuteTiming(ctx context.Context, name string, orgID int64) (definitions.MuteTimeInterval, error) {
+	return definitions.MuteTimeInterval{}, nil
+}
+
+func (s *fakeMuteTimingService) CreateMuteTiming(ctx context.Context, mt definitions.MuteTimeInterval, orgID int64) (definitions.MuteTimeInterval, error) {
+	return definitions.MuteTimeInterval{}, nil
+}
+
+func (s *fakeMuteTimingService) UpdateMuteTiming(ctx context.Context, mt definitions.MuteTimeInterval, orgID int64) (definitions.MuteTimeInterval, error) {
+	return definitions.MuteTimeInterval{}, nil
+}
+
+func (s *fakeMuteTimingService) DeleteMuteTiming(ctx context.Context, name string, orgID int64, provenance definitions.Provenance, version string) error {
+	return nil
 }
 
 func ctxWithSignedInUser() context.Context {

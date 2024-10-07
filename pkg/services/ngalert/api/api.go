@@ -69,7 +69,7 @@ type API struct {
 	ReceiverService      *notifier.ReceiverService
 	ContactPointService  *provisioning.ContactPointService
 	Templates            *provisioning.TemplateService
-	MuteTimings          *provisioning.MuteTimingService
+	MuteTimings          MuteTimingService
 	AlertRules           *provisioning.AlertRuleService
 	AlertsRouter         *sender.AlertsRouter
 	EvaluatorFactory     eval.EvaluatorFactory
